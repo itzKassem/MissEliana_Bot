@@ -1,0 +1,8 @@
+axel_kassemsyr/config.py
+*.pyc
+.idea/
+.project
+.pydevproject
+.directory
+.vscode
+sudo_users.txt
