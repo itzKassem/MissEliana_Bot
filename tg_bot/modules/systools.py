@@ -6,11 +6,13 @@ import speedtest
 import json
 import sys
 import traceback
-
+import psutil
+import platform
 import tg_bot.modules.helper_funcs.cas_api as cas
 import tg_bot.modules.helper_funcs.git_api as git
 
-from platform import python_version
+from datetime import datetime
+from platform import python_version, uname
 from telegram import Update, Bot, Message, Chat, ParseMode
 from telegram.ext import CommandHandler, run_async, Filters
 from telegram.error import BadRequest, Unauthorized
@@ -22,20 +24,8 @@ from tg_bot.modules.disable import DisableAbleCommandHandler, DisableAbleRegexHa
 from tg_bot.modules.translations.strings import tld
 from tg_bot.modules.helper_funcs.alternate import send_message
 
-@run_async
-def status(bot: Bot, update: Update):
-    reply = "<b>System Status:</b> <code>operational</code>\n\n"
-    reply += "<b>Bot version:</b> <code>0.5</code>\n"
-    reply += "<b>Python version:</b> <code>"+python_version()+"</code>\n"
-    reply += "<b>CAS API version:</b> <code>"+str(cas.vercheck())+"</code>\n"
-    reply += "<b>GitHub API version:</b> <code>"+str(git.vercheck())+"</code>\n\n"
-    update.effective_message.reply_text(reply, parse_mode=ParseMode.HTML)
-
 
 def speed_convert(size):
-    """
-    Hi human, you can't read bytes?
-    """
     power = 2 ** 10
     zero = 0
     units = {0: '', 1: 'Kb/s', 2: 'Mb/s', 3: 'Gb/s', 4: 'Tb/s'}
@@ -44,6 +34,58 @@ def speed_convert(size):
         zero += 1
     return f"{round(size, 2)} {units[zero]}"
 
+def get_size(bytes, suffix="B"):
+    factor = 1024
+    for unit in ["", "K", "M", "G", "T", "P"]:
+        if bytes < factor:
+            return f"{bytes:.2f}{unit}{suffix}"
+        bytes /= factor
+
+@run_async
+def status(bot: Bot, update: Update):
+	message = update.effective_message
+	chat = update.effective_chat
+	
+	stat = "--- System Status ---\n\n"
+	stat += "Python version: "+python_version()+"\n"
+	stat += "CAS API version: "+str(cas.vercheck())+"\n"
+	stat += "GitHub API version: "+str(git.vercheck())+"\n\n"
+	#Software Info
+	uname = platform.uname()
+	softw = "---  Software Information ---\n"
+	softw += f"System: {uname.system}\n"
+	softw += f"Node Name: {uname.node}\n"
+	softw += f"Release: {uname.release}\n"
+	softw += f"Version: {uname.version}\n"
+	softw += f"Machine: {uname.machine}\n"
+	softw += f"Processor: {uname.processor}\n"
+	#Boot Time
+	boot_time_timestamp = psutil.boot_time()
+	bt = datetime.fromtimestamp(boot_time_timestamp)
+	softw += f"Boot Time: {bt.year}/{bt.month}/{bt.day}  {bt.hour}:{bt.minute}:{bt.second}\n\n"
+	#CPU Cores
+	cpuu = "--- CPU Info ---\n"
+	cpuu += "Physical cores:" + str(psutil.cpu_count(logical=False)) + "\n"
+	cpuu += "Total cores:" + str(psutil.cpu_count(logical=True)) + "\n"
+	# CPU frequencies
+	cpufreq = psutil.cpu_freq()
+	cpuu += f"Max Frequency: {cpufreq.max:.2f}Mhz\n"
+	cpuu += f"Min Frequency: {cpufreq.min:.2f}Mhz\n"
+	cpuu += f"Current Frequency: {cpufreq.current:.2f}Mhz\n\n"
+	# CPU usage
+	cpuu += "--- CPU Usage Per Core ---\n"
+	for i, percentage in enumerate(psutil.cpu_percent(percpu=True)):
+	    cpuu += f"Core {i}: {percentage}%\n"
+	cpuu += f"Total CPU Usage: {psutil.cpu_percent()}%\n\n"
+	# RAM Usage
+	svmem = psutil.virtual_memory()
+	memm = "--- Memory Usage ---\n"
+	memm += f"Total: {get_size(svmem.total)}\n"
+	memm += f"Available: {get_size(svmem.available)}\n"
+	memm += f"Used: {get_size(svmem.used)}\n"
+	memm += f"Percentage: {svmem.percent}%\n"
+	reply = "<code>" + str(stat)+ str(softw) + str(cpuu) + str(memm) + "</code>\n\n"
+	bot.send_message(chat.id, reply, parse_mode=ParseMode.HTML)
 
 @run_async
 def get_bot_ip(bot: Bot, update: Update):
@@ -167,7 +209,8 @@ def executor(bot: Bot, update: Update):
 			exc_type, exc_obj, exc_tb = sys.exc_info()
 			errors = traceback.format_exception(etype=exc_type, value=exc_obj, tb=exc_tb)
 			send_message(update.effective_message, "**Execute**\n`{}`\n\n*Failed:*\n```{}```".format(code, "".join(errors)), parse_mode="markdown")
-                                        
+			
+
 __help__ = ""
 
 __mod_name__ = "Sys Tools"
@@ -180,7 +223,7 @@ PONG_HANDLER = CommandHandler("ping", pong)
 LOG_HANDLER = DisableAbleCommandHandler("log", log, filters=Filters.user(OWNER_ID))
 REBOOT_HANDLER = CommandHandler("reboot", reboot, filters=Filters.user(OWNER_ID))
 EXEC_HANDLER = CommandHandler("py", executor, filters=Filters.user(OWNER_ID))
-
+                
 dispatcher.add_handler(STATUS_HANDLER)
 dispatcher.add_handler(IP_HANDLER)
 dispatcher.add_handler(SPEED_HANDLER)
