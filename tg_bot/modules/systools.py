@@ -46,10 +46,10 @@ def status(bot: Bot, update: Update):
 	message = update.effective_message
 	chat = update.effective_chat
 	
-	stat = "--- System Status ---\n\n"
+	stat = "--- System Status ---\n"
 	stat += "Python version: "+python_version()+"\n"
 	stat += "CAS API version: "+str(cas.vercheck())+"\n"
-	stat += "GitHub API version: "+str(git.vercheck())+"\n\n"
+	stat += "GitHub API version: "+str(git.vercheck())+"\n"
 	#Software Info
 	uname = platform.uname()
 	softw = "---  Software Information ---\n"
@@ -62,7 +62,7 @@ def status(bot: Bot, update: Update):
 	#Boot Time
 	boot_time_timestamp = psutil.boot_time()
 	bt = datetime.fromtimestamp(boot_time_timestamp)
-	softw += f"Boot Time: {bt.year}/{bt.month}/{bt.day}  {bt.hour}:{bt.minute}:{bt.second}\n\n"
+	softw += f"Boot Time: {bt.year}/{bt.month}/{bt.day}  {bt.hour}:{bt.minute}:{bt.second}\n"
 	#CPU Cores
 	cpuu = "--- CPU Info ---\n"
 	cpuu += "Physical cores:" + str(psutil.cpu_count(logical=False)) + "\n"
@@ -71,12 +71,12 @@ def status(bot: Bot, update: Update):
 	cpufreq = psutil.cpu_freq()
 	cpuu += f"Max Frequency: {cpufreq.max:.2f}Mhz\n"
 	cpuu += f"Min Frequency: {cpufreq.min:.2f}Mhz\n"
-	cpuu += f"Current Frequency: {cpufreq.current:.2f}Mhz\n\n"
+	cpuu += f"Current Frequency: {cpufreq.current:.2f}Mhz\n"
 	# CPU usage
 	cpuu += "--- CPU Usage Per Core ---\n"
 	for i, percentage in enumerate(psutil.cpu_percent(percpu=True)):
 	    cpuu += f"Core {i}: {percentage}%\n"
-	cpuu += f"Total CPU Usage: {psutil.cpu_percent()}%\n\n"
+	cpuu += f"Total CPU Usage: {psutil.cpu_percent()}%\n"
 	# RAM Usage
 	svmem = psutil.virtual_memory()
 	memm = "--- Memory Usage ---\n"
@@ -84,7 +84,7 @@ def status(bot: Bot, update: Update):
 	memm += f"Available: {get_size(svmem.available)}\n"
 	memm += f"Used: {get_size(svmem.used)}\n"
 	memm += f"Percentage: {svmem.percent}%\n"
-	reply = "<code>" + str(stat)+ str(softw) + str(cpuu) + str(memm) + "</code>\n\n"
+	reply = "<code>" + str(stat)+ str(softw) + str(cpuu) + str(memm) + "</code>\n\"
 	bot.send_message(chat.id, reply, parse_mode=ParseMode.HTML)
 
 @run_async
@@ -215,7 +215,7 @@ __help__ = ""
 
 __mod_name__ = "Sys Tools"
 
-STATUS_HANDLER = CommandHandler("status", status)
+STATUS_HANDLER = CommandHandler("status", status, filters=CustomFilters.sudo_filter)
 IP_HANDLER = CommandHandler("ip", get_bot_ip, filters=Filters.chat(OWNER_ID))
 PING_HANDLER = CommandHandler("cping", ping, filters=CustomFilters.sudo_filter)
 SPEED_HANDLER = CommandHandler("speed", speedtst, filters=CustomFilters.sudo_filter)
