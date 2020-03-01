@@ -118,13 +118,14 @@ def new_member(bot: Bot, update: Update):
         msg.reply_text("Warning! This user is CAS Banned. I have muted them to avoid spam. Ban is advised.")
         isUserGbanned = is_user_gbanned(user.id)
         report = "CAS Banned user detected: <code>{}</code>\nGlobally Banned: {}".format(user.id, isUserGbanned)
+        bot.send_message(MESSAGE_DUMP, "CAS Banned user detected: <code>{}</code>\nGlobally Banned: {}".format(user.id, isUserGbanned), parse_mode=ParseMode.HTML)
         if defense:
             bot.unban_chat_member(chat.id, user.id)
     elif casPrefs and autoban and cas.banchecker(user.id):
         chat.kick_member(user.id)
         msg.reply_text("CAS banned user detected! User has been automatically banned!")
         isUserGbanned = is_user_gbanned(user.id)
-        report = "CAS Banned user detected: <code>{}</code>\nGlobally Banned: {}".format(user.id, isUserGbanned)
+        bot.send_message(MESSAGE_DUMP, "CAS Banned user detected: <code>{}</code>\nGlobally Banned: {}".format(user.id, isUserGbanned), parse_mode=ParseMode.HTML)
     elif defense:
         bot.unban_chat_member(chat.id, user.id)
     elif should_welc:
@@ -141,7 +142,7 @@ def new_member(bot: Bot, update: Update):
             elif new_mem.id == bot.id:
                 update.effective_message.reply_text("Hey {}, I'm {}! Thank you for adding me to {}" 
                 " and be sure to check /help in PM for more commands and tricks!".format(user.first_name, bot.first_name, chat_name))
-                bot.send_message(MESSAGE_DUMP, OWNER_ID,
+                bot.send_message(OWNER_ID,
                     "I have been added to {} with ID: <pre>{}</pre>".format(chat.title, chat.id),
                     parse_mode=ParseMode.HTML)
             else:
