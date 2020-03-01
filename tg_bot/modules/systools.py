@@ -84,7 +84,7 @@ def status(bot: Bot, update: Update):
 	memm += f"Available: {get_size(svmem.available)}\n"
 	memm += f"Used: {get_size(svmem.used)}\n"
 	memm += f"Percentage: {svmem.percent}%\n"
-	reply = "<code>" + str(stat)+ str(softw) + str(cpuu) + str(memm) + "</code>\n\"
+	reply = "<code>" + str(stat)+ str(softw) + str(cpuu) + str(memm) + "</code>\n"
 	bot.send_message(chat.id, reply, parse_mode=ParseMode.HTML)
 
 @run_async
