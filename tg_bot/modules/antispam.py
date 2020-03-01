@@ -92,10 +92,7 @@ def gban(bot: Bot, update: Update, args: List[str]):
         if old_reason:
             banner = update.effective_user  # type: Optional[User]
             bannerid = banner.id
-
-            if int(bannerid) == int(172811422) or int(214416808):
-                return
-
+            
             bannername = banner.first_name
             new_reason = f"{new_reason} // GBanned by {bannername} id {bannerid}"
 
@@ -119,10 +116,7 @@ def gban(bot: Bot, update: Update, args: List[str]):
         else:
             banner = update.effective_user  # type: Optional[User]
             bannerid = banner.id
-
-            if int(bannerid) == int(172811422) or int(214416808):
-                return
-
+            
             bannername = banner.first_name
             new_reason = f"{new_reason} // GBanned by {bannername} id {bannerid}"
 
@@ -162,8 +156,6 @@ def gban(bot: Bot, update: Update, args: List[str]):
     sql.gban_user(user_id, user_chat.username or user_chat.first_name, reason)
 
     try:
-        if int(bannerid) == int(172811422) or int(214416808):
-            return
         chat.kick_member(user_chat.id)
     except:
         print("Meh")
