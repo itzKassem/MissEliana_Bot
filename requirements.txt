@@ -19,3 +19,4 @@ speedtest-cli>=2.0.2
 bs4
 lxml
 googletrans>=2.4.0
+psutil
