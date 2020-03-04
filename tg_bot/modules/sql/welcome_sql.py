@@ -430,6 +430,17 @@ def get_cas_autoban(chat_id):
     finally:
         SESSION.close() 
         
+def set_cas_autoban(chat_id, autoban):
+    with CAS_LOCK:
+        status = True
+        prevObj = SESSION.query(CombotCASStatus).get(str(chat_id))
+        if prevObj:
+            status = prevObj.status
+            SESSION.delete(prevObj)
+        newObj = CombotCASStatus(str(chat_id), status, autoban)
+        SESSION.add(newObj)
+        SESSION.commit()
+        
 def getDefenseStatus(chat_id):
     try:
         resultObj = SESSION.query(DefenseMode).get(str(chat_id))
