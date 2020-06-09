@@ -118,7 +118,7 @@ def send_start(bot, update):
 
     keyboard = [[
         InlineKeyboardButton(text=tld(chat.id, 'main_start_btn_support'),
-                             url="https://t.me/HarukaAyaGroup")
+                             url="http://telegram.me/MissEliana_BoT?startgroup=botstart")
     ]]
     keyboard += [[
         InlineKeyboardButton(text=tld(chat.id, 'main_start_btn_lang'),
