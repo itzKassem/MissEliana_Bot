@@ -1,20 +1,3 @@
-#    Haruka Aya (A telegram bot project)
-#    Copyright (C) 2017-2019 Paul Larsen
-#    Copyright (C) 2019-2020 Akito Mizukito (Haruka Network Development)
-
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
 import html
 import wikipedia
 import re
@@ -40,13 +23,6 @@ from eliana.modules.tr_engine.strings import tld
 from requests import get
 
 cvid = Covid(source="worldometers")
-
-
-@run_async
-def get_bot_ip(bot: Bot, update: Update):
-    res = requests.get("http://ipinfo.io/ip")
-    update.message.reply_text(res.text)
-
 
 @run_async
 def get_id(bot: Bot, update: Update, args: List[str]):
@@ -193,70 +169,6 @@ def stats(bot: Bot, update: Update):
         # This text doesn't get translated as it is internal message.
         "*Current Stats:*\n" + "\n".join([mod.__stats__() for mod in STATS]),
         parse_mode=ParseMode.MARKDOWN)
-
-
-@run_async
-def github(bot: Bot, update: Update):
-    message = update.effective_message
-    text = message.text[len('/git '):]
-    usr = get(f'https://api.github.com/users/{text}').json()
-    if usr.get('login'):
-        text = f"*Username:* [{usr['login']}](https://github.com/{usr['login']})"
-
-        whitelist = [
-            'name', 'id', 'type', 'location', 'blog', 'bio', 'followers',
-            'following', 'hireable', 'public_gists', 'public_repos', 'email',
-            'company', 'updated_at', 'created_at'
-        ]
-
-        difnames = {
-            'id': 'Account ID',
-            'type': 'Account type',
-            'created_at': 'Account created at',
-            'updated_at': 'Last updated',
-            'public_repos': 'Public Repos',
-            'public_gists': 'Public Gists'
-        }
-
-        goaway = [None, 0, 'null', '']
-
-        for x, y in usr.items():
-            if x in whitelist:
-                if x in difnames:
-                    x = difnames[x]
-                else:
-                    x = x.title()
-
-                if x == 'Account created at' or x == 'Last updated':
-                    y = datetime.strptime(y, "%Y-%m-%dT%H:%M:%SZ")
-
-                if y not in goaway:
-                    if x == 'Blog':
-                        x = "Website"
-                        y = f"[Here!]({y})"
-                        text += ("\n*{}:* {}".format(x, y))
-                    else:
-                        text += ("\n*{}:* `{}`".format(x, y))
-        reply_text = text
-    else:
-        reply_text = "User not found. Make sure you entered valid username!"
-    message.reply_text(reply_text,
-                       parse_mode=ParseMode.MARKDOWN,
-                       disable_web_page_preview=True)
-
-
-@run_async
-def repo(bot: Bot, update: Update, args: List[str]):
-    message = update.effective_message
-    text = message.text[len('/repo '):]
-    usr = get(f'https://api.github.com/users/{text}/repos?per_page=40').json()
-    reply_text = "*Repo*\n"
-    for i in range(len(usr)):
-        reply_text += f"[{usr[i]['name']}]({usr[i]['html_url']})\n"
-    message.reply_text(reply_text,
-                       parse_mode=ParseMode.MARKDOWN,
-                       disable_web_page_preview=True)
-
 
 @run_async
 def paste(bot: Bot, update: Update, args: List[str]):
@@ -474,14 +386,8 @@ ID_HANDLER = DisableAbleCommandHandler("id",
                                        get_id,
                                        pass_args=True,
                                        admin_ok=True)
-IP_HANDLER = CommandHandler("ip", get_bot_ip, filters=Filters.chat(OWNER_ID))
 INFO_HANDLER = DisableAbleCommandHandler("info",
                                          info,
-                                         pass_args=True,
-                                         admin_ok=True)
-GITHUB_HANDLER = DisableAbleCommandHandler("git", github, admin_ok=True)
-REPO_HANDLER = DisableAbleCommandHandler("repo",
-                                         repo,
                                          pass_args=True,
                                          admin_ok=True)
 
@@ -514,8 +420,6 @@ dispatcher.add_handler(ECHO_HANDLER)
 dispatcher.add_handler(MD_HELP_HANDLER)
 dispatcher.add_handler(STATS_HANDLER)
 dispatcher.add_handler(GDPR_HANDLER)
-dispatcher.add_handler(GITHUB_HANDLER)
-dispatcher.add_handler(REPO_HANDLER)
 dispatcher.add_handler(
     DisableAbleCommandHandler("removebotkeyboard", reply_keyboard_remove))
 dispatcher.add_handler(WIKI_HANDLER)
