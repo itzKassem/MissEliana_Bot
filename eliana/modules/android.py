@@ -2,7 +2,7 @@ import re, html, time
 import lxml
 from bs4 import BeautifulSoup
 from requests import get
-from telegram import Message, Update, Bot, User, Chat, ParseMode, InlineKeyboardMarkup
+from telegram import Message, Update, Bot, User, Chat, ParseMode, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.error import BadRequest
 from telegram.ext import run_async
 from telegram.utils.helpers import escape_markdown, mention_html
@@ -76,18 +76,12 @@ def device(bot, update, args):
                                parse_mode=ParseMode.HTML, disable_web_page_preview=True)
 
 @run_async
-def checkfw(bot, update, args):
+def fw_check(bot, update, args):
     if not len(args) == 2:
-        reply = f'Give me something to fetch, like:\n`/checkfw SM-N975F DBT`'
+        reply = f'Please type your device **model** & **csc**  into it!\nFor example, `/samsung SM-G975F INS`!'
         del_msg = update.effective_message.reply_text("{}".format(reply),
                                parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
-        time.sleep(5)
-        try:
-            del_msg.delete()
-            update.effective_message.delete()
-        except BadRequest as err:
-            if (err.message == "Message to delete not found" ) or (err.message == "Message can't be deleted" ):
-                return
+        return
     temp,csc = args
     model = f'sm-'+temp if not temp.upper().startswith('SM-') else temp
     fota = get(f'http://fota-cloud-dn.ospserver.net/firmware/{csc.upper()}/{model.upper()}/version.xml')
@@ -96,57 +90,46 @@ def checkfw(bot, update, args):
         reply = f"Couldn't check for {temp.upper()} and {csc.upper()}, please refine your search or try again later!"
         del_msg = update.effective_message.reply_text("{}".format(reply),
                                parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
-        time.sleep(5)
-        try:
-            del_msg.delete()
-            update.effective_message.delete()
-        except BadRequest as err:
-            if (err.message == "Message to delete not found" ) or (err.message == "Message can't be deleted" ):
-                return
+        return
     page1 = BeautifulSoup(fota.content, 'lxml')
     page2 = BeautifulSoup(test.content, 'lxml')
     os1 = page1.find("latest").get("o")
     os2 = page2.find("latest").get("o")
     if page1.find("latest").text.strip():
         pda1,csc1,phone1=page1.find("latest").text.strip().split('/')
-        reply = f'*Latest released firmware for {model.upper()} and {csc.upper()} is:*\n'
-        reply += f'- PDA: `{pda1}`\n- CSC: `{csc1}`\n'
+        reply = f'*Firmware informations for: \nDEVICE : {model.upper()} \nCSC : {csc.upper()} *\n'
+        reply += f'*Latest firmware release:*\n'
+        reply += f'• PDA: `{pda1}`\n• CSC: `{csc1}`\n'
         if phone1:
-            reply += f'- Phone: `{phone1}`\n'
+            reply += f'• Phone: `{phone1}`\n'
         if os1:
-            reply += f'- Android: `{os1}`\n'
+            reply += f'• Android: `{os1}`\n'
         reply += f'\n'
     else:
         reply = f'*No public release found for {model.upper()} and {csc.upper()}.*\n\n'
-    reply += f'*Latest test firmware for {model.upper()} and {csc.upper()} is:*\n'
+    reply += f'*Latest test firmware:*\n'
     if len(page2.find("latest").text.strip().split('/')) == 3:
         pda2,csc2,phone2=page2.find("latest").text.strip().split('/')
-        reply += f'- PDA: `{pda2}`\n- CSC: `{csc2}`\n'
+        reply += f'• PDA: `{pda2}`\n• CSC: `{csc2}`\n'
         if phone2:
-            reply += f'- Phone: `{phone2}`\n'
+            reply += f'• Phone: `{phone2}`\n'
         if os2:
-            reply += f'- Android: `{os2}`\n'
+            reply += f'• Android: `{os2}`\n'
         reply += f'\n'
     else:
         md5=page2.find("latest").text.strip()
-        reply += f'- Hash: `{md5}`\n- Android: `{os2}`\n\n'
+        reply += f'• Hash: `{md5}`\n• Android: `{os2}`\n\n'
     
     update.message.reply_text("{}".format(reply),
                            parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
 
 @run_async
-def getfw(bot, update, args):
+def fw_dl(bot, update, args):
     if not len(args) == 2:
-        reply = f'Give me something to fetch, like:\n`/getfw SM-N975F DBT`'
+        reply = f'Please type your device **model** & **csc**  into it!\nFor example, `/samsung SM-G975F INS`!'
         del_msg = update.effective_message.reply_text("{}".format(reply),
                                parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
-        time.sleep(5)
-        try:
-            del_msg.delete()
-            update.effective_message.delete()
-        except BadRequest as err:
-            if (err.message == "Message to delete not found" ) or (err.message == "Message can't be deleted" ):
-                return
+        return
     temp,csc = args
     model = f'sm-'+temp if not temp.upper().startswith('SM-') else temp
     test = get(f'http://fota-cloud-dn.ospserver.net/firmware/{csc.upper()}/{model.upper()}/version.test.xml')
@@ -154,13 +137,7 @@ def getfw(bot, update, args):
         reply = f"Couldn't find any firmware downloads for {temp.upper()} and {csc.upper()}, please refine your search or try again later!"
         del_msg = update.effective_message.reply_text("{}".format(reply),
                                parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
-        time.sleep(5)
-        try:
-            del_msg.delete()
-            update.effective_message.delete()
-        except BadRequest as err:
-            if (err.message == "Message to delete not found" ) or (err.message == "Message can't be deleted" ):
-                return
+        return
     url1 = f'https://samfrew.com/model/{model.upper()}/region/{csc.upper()}/'
     url2 = f'https://www.sammobile.com/samsung/firmware/{model.upper()}/{csc.upper()}/'
     url3 = f'https://sfirmware.com/samsung-{model.lower()}/#tab=firmwares'
@@ -171,21 +148,19 @@ def getfw(bot, update, args):
     reply = ""
     if page.find("latest").text.strip():
         pda,csc2,phone=page.find("latest").text.strip().split('/')
-        reply += f'*Latest firmware for {model.upper()} and {csc.upper()} is:*\n'
-        reply += f'- PDA: `{pda}`\n- CSC: `{csc2}`\n'
+        reply += f'*Latest firmware release for: \nDevice: {model.upper()} \nCSC: {csc.upper()} *\n'
+        reply += f'• PDA: `{pda}`\n• CSC: `{csc2}`\n'
         if phone:
-            reply += f'- Phone: `{phone}`\n'
+            reply += f'• Phone: `{phone}`\n'
         if os:
-            reply += f'- Android: `{os}`\n'
-    reply += f'\n'
-    reply += f'*Downloads for {model.upper()} and {csc.upper()}*\n'
-    reply += f'- [samfrew.com]({url1})\n'
-    reply += f'- [sammobile.com]({url2})\n'
-    reply += f'- [sfirmware.com]({url3})\n'
-    reply += f'- [samfw.com]({url4})\n'
-    update.message.reply_text("{}".format(reply),
+            reply += f'• Android: `{os}`\n'
+    keyboard = [[InlineKeyboardButton(text="samfrew.com", url=f"{url1}")]]
+    keyboard += [[InlineKeyboardButton(text="samobile.com", url=f"{url2}")]]
+    keyboard += [[InlineKeyboardButton(text="sfirmware.com", url=f"{url3}")]]
+    keyboard += [[InlineKeyboardButton(text="smfw.com ☆", url=f"{url4}")]]
+    update.message.reply_text("{}".format(reply), reply_markup=InlineKeyboardMarkup(keyboard),
                            parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
-
+                           
 @run_async
 def twrp(bot, update, args):
     if len(args) == 0:
@@ -225,26 +200,26 @@ def twrp(bot, update, args):
             pass
         page = BeautifulSoup(url.content, 'lxml')
         date = page.find("em").text.strip()
+        trs = page.find('table').find('tr')
+        download = trs.find('a')
+        dl_link = f"https://eu.dl.twrp.me{download['href']}"
+        dir_link = dl_link.replace('.html', '') if dl_link.endswith('.html') else dl_link
+        dl_file = download.text
+        size = trs.find("span", {"class": "filesize"}).text
+        dir_link = dl_link.replace('.html', '') if dl_link.endswith('.html') else dl_link
         reply += f'*Updated:* {date}\n'
-        trs = page.find('table').find_all('tr')
-        row = 2 if trs[0].find('a').text.endswith('tar') else 1
-        for i in range(row):
-            download = trs[i].find('a')
-            dl_link = f"https://eu.dl.twrp.me{download['href']}"
-            dl_file = download.text
-            size = trs[i].find("span", {"class": "filesize"}).text
-            reply += f'[{dl_file}]({dl_link}) - {size}\n'
-
-        update.message.reply_text("{}".format(reply),
+        reply += f'*Size:* {size}\n'
+        keyboard = [[InlineKeyboardButton(f"{dl_file}", url=dir_link)]]
+        update.message.reply_text("{}".format(reply), reply_markup=InlineKeyboardMarkup(keyboard),
                                parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
-
+                               
 __help__ = True
 
 MAGISK_HANDLER = DisableAbleCommandHandler("magisk", magisk)
 DEVICE_HANDLER = DisableAbleCommandHandler("device", device, pass_args=True)
 TWRP_HANDLER = DisableAbleCommandHandler("twrp", twrp, pass_args=True)
-GETFW_HANDLER = DisableAbleCommandHandler("getfw", getfw, pass_args=True)
-CHECKFW_HANDLER = DisableAbleCommandHandler("checkfw", checkfw, pass_args=True)
+GETFW_HANDLER = DisableAbleCommandHandler("getfw", fw_dl, pass_args=True)
+CHECKFW_HANDLER = DisableAbleCommandHandler("checkfw", fw_check, pass_args=True)
 
 dispatcher.add_handler(MAGISK_HANDLER)
 dispatcher.add_handler(DEVICE_HANDLER)
