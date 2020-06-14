@@ -78,7 +78,7 @@ def device(bot, update, args):
 @run_async
 def fw_check(bot, update, args):
     if not len(args) == 2:
-        reply = f'Please type your device **model** & **csc**  into it!\nFor example, `/samsung SM-G975F INS`!'
+        reply = f'Please type your device **model** & **csc**  into it!\nFor example, `/check SM-G975F INS`!'
         del_msg = update.effective_message.reply_text("{}".format(reply),
                                parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
         return
@@ -126,7 +126,7 @@ def fw_check(bot, update, args):
 @run_async
 def fw_dl(bot, update, args):
     if not len(args) == 2:
-        reply = f'Please type your device **model** & **csc**  into it!\nFor example, `/samsung SM-G975F INS`!'
+        reply = f'Please type your device **model** & **csc**  into it!\nFor example, `/fw SM-G975F INS`!'
         del_msg = update.effective_message.reply_text("{}".format(reply),
                                parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
         return
@@ -218,8 +218,8 @@ __help__ = True
 MAGISK_HANDLER = DisableAbleCommandHandler("magisk", magisk)
 DEVICE_HANDLER = DisableAbleCommandHandler("device", device, pass_args=True)
 TWRP_HANDLER = DisableAbleCommandHandler("twrp", twrp, pass_args=True)
-GETFW_HANDLER = DisableAbleCommandHandler("getfw", fw_dl, pass_args=True)
-CHECKFW_HANDLER = DisableAbleCommandHandler("checkfw", fw_check, pass_args=True)
+GETFW_HANDLER = DisableAbleCommandHandler("fw", fw_dl, pass_args=True)
+CHECKFW_HANDLER = DisableAbleCommandHandler("check", fw_check, pass_args=True)
 
 dispatcher.add_handler(MAGISK_HANDLER)
 dispatcher.add_handler(DEVICE_HANDLER)
