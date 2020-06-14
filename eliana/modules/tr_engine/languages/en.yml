@@ -74,8 +74,8 @@ android_help: |
   - /magisk - gets the latest magisk release for Stable/Beta/Canary
   - /device <codename> - gets android device basic info from its codename
   - /twrp <codename> -  gets latest twrp for the android device using the codename
-  - /checkfw <model> <csc> - Samsung only - shows the latest firmware info for the given device, taken from samsung servers
-  - /getfw <model> <csc> - Samsung only - gets firmware download links from samfrew, sammobile and sfirmwares for the given device
+  - /check <model> <csc> - Samsung only - shows the latest firmware info for the given device, taken from samsung servers
+  - /fw <model> <csc> - Samsung only - gets firmware download links from samfrew, sammobile and sfirmwares for the given device
 #Antiflood
 modname_antiflood: Antiflood
 flood_mute: I would like to leave the flooding to natural disasters. But you, you were just a disappointment. *Muted*!
