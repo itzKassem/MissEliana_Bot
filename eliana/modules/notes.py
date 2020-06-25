@@ -201,9 +201,6 @@ def save(bot: Bot, update: Update):
         msg.reply_text(tld(chat.id, "save_invalid"))
         return
 
-    if len(text.strip()) == 0:
-        text = note_name
-
     if not sql.get_note(chat_id, note_name):
         sql.add_note_to_db(chat_id,
                            note_name,
