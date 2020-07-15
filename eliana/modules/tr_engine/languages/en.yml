@@ -1112,6 +1112,15 @@ github_help: |
   *Admin only:*
   - /saverepo <name> <user>/<repo> <number (optional)>: saves a repo value as shortcut
   - /delrepo <name>: deletes a repo shortcut.
+#AI Chatbot  
+modname_chatbot: AI Chatbot
+chatbot_help: |
+Chatbot utilizes the CoffeeHouse API and allows bot to talk back making your chat more interactive.
+
+Commands: Currently these only work for owner. 
+ - /addchat : Enables AI Chatbot mode in the chat.
+ - /rmchat  : Disables AI Chatbot mode in the chat.
+ Powered by CoffeeHouse@Intellivoid
 ### Helper functions
 #chat_status
 helpers_bot_cant_delete: I can't delete messages here! Make sure I'm admin and can delete other user's messages.
