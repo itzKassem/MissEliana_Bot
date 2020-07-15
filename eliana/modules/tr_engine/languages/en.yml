@@ -1115,9 +1115,9 @@ github_help: |
 #AI Chatbot  
 modname_chatbot: AI Chatbot
 chatbot_help: |
-Chatbot utilizes the CoffeeHouse API and allows bot to talk back making your chat more interactive.
+ Chatbot utilizes the CoffeeHouse API and allows bot to talk back making your chat more interactive.
 
-Commands: Currently these only work for owner. 
+ Commands: Currently these only work for owner. 
  - /addchat : Enables AI Chatbot mode in the chat.
  - /rmchat  : Disables AI Chatbot mode in the chat.
  Powered by CoffeeHouse@Intellivoid
