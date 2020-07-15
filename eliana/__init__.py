@@ -60,6 +60,7 @@ if ENV:
     DEL_CMDS = bool(os.environ.get('DEL_CMDS', False))
     STRICT_ANTISPAM = bool(os.environ.get('STRICT_ANTISPAM', False))
     WORKERS = int(os.environ.get('WORKERS', 8))
+    AI_API_KEY = os.environ.get('AI_API_KEY', None)
     
     # SpamWatch
     spamwatch_api = os.environ.get('SW_API', None)
@@ -136,6 +137,7 @@ else:
 	STRICT_ANTISPAM = CONFIG['strict_antispam']
 	WORKERS = CONFIG['workers']
 	DEEPFRY_TOKEN = CONFIG['deepfry_token']
+	AI_API_KEY = CONFIG['AI_API_KEY']
 	
 	# SpamWatch
 	spamwatch_api = CONFIG['sw_api']
