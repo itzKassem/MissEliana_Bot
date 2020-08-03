@@ -1,11 +1,10 @@
-import html, time
+import time
 import lxml
 from bs4 import BeautifulSoup
 from requests import get
 from telegram import Update, Bot, User, Chat, ParseMode, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.error import BadRequest
 from telegram.ext import run_async
-from telegram.utils.helpers import mention_html
 
 from eliana import dispatcher
 from eliana.modules.disable import DisableAbleCommandHandler
@@ -73,7 +72,7 @@ def fw_check(bot, update, args):
                                parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
         return
     temp,csc = args
-    model = f'sm-'+temp if not temp.upper().startswith('SM-') else temp
+    model = 'sm-'+temp if not temp.upper().startswith('SM-') else temp
     fota = get(f'http://fota-cloud-dn.ospserver.net/firmware/{csc.upper()}/{model.upper()}/version.xml')
     test = get(f'http://fota-cloud-dn.ospserver.net/firmware/{csc.upper()}/{model.upper()}/version.test.xml')
     if test.status_code != 200:
@@ -109,7 +108,6 @@ def fw_check(bot, update, args):
     else:
         md5=page2.find("latest").text.strip()
         reply += f'- Hash: `{md5}`\n- Android: `{os2}`\n\n'
-    
     update.message.reply_text("{}".format(reply),
                            parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
 
@@ -125,7 +123,7 @@ def fw_dl(bot, update, args):
     test = get(f'http://fota-cloud-dn.ospserver.net/firmware/{csc.upper()}/{model.upper()}/version.test.xml')
     if test.status_code != 200:
         reply = f"Couldn't find any firmware downloads for {temp.upper()} and {csc.upper()}, please refine your search or try again later!"
-        del_msg = update.effective_message.reply_text("{}".format(reply),
+        update.effective_message.reply_text("{}".format(reply),
                                parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
         return
     url1 = f'https://samfrew.com/model/{model.upper()}/region/{csc.upper()}/'
