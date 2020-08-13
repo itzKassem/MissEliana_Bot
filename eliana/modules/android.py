@@ -15,16 +15,14 @@ DEVICES_DATA = 'https://raw.githubusercontent.com/androidtrackers/certified-andr
 @run_async
 def magisk(bot, update):
     url = 'https://raw.githubusercontent.com/topjohnwu/magisk_files/'
-    releases = ""
-    for type, branch in {"Stable":"master/stable", "Beta":"master/beta", "Canary (debug)":"canary/debug"}.items():
-        data = get(url + branch[0] + '.json').json()
-        releases += f'*{type}*: \n' \
-                    f'- [Changelog](https://github.com/topjohnwu/magisk_files/blob/{branch[1]}/notes.md)\n' \
-                    f'- Zip - [{data["magisk"]["version"]}-{data["magisk"]["versionCode"]}]({data["magisk"]["link"]}) \n' \
-                    f'- App - [{data["app"]["version"]}-{data["app"]["versionCode"]}]({data["app"]["link"]}) \n' \
-                    f'- Uninstaller - [{data["magisk"]["version"]}-{data["magisk"]["versionCode"]}]({data["uninstaller"]["link"]})\n\n'
-    update.message.reply_text("*Latest Magisk Releases:*\n{}".format(releases),
-                               parse_mode=ParseMode.MARKDOWN, disable_web_page_preview=True)
+    message = "Latest Magisk Releases:\n"
+    for magisk_type, path  in {"Stable":"master/stable", "Beta":"master/beta", "Canary (debug)":"canary/debug"}.items():
+        data = get(url + path + '.json').json()
+        message += f'<b>• {magisk_type}</b>:\nInstaller - <a href="{data["magisk"]["link"]}">v{data["magisk"]["version"]}</a> \n' \
+                    f'Manager - <a href="{data["app"]["link"]}">v{data["app"]["version"]}</a> \n' \
+                    f'Uninstaller - <a href="{data["uninstaller"]["link"]}">{type}</a>'
+    update.message.reply_text(text=message,
+                               parse_mode=ParseMode.HTML, disable_web_page_preview=True)
 @run_async
 def device(bot, update, args):
     if len(args) == 0:
