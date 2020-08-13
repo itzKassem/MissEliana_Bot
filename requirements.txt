@@ -1,6 +1,6 @@
 python-telegram-bot==11.1.0
 telethon
-aiohttp>=2.2.5
+aiohttp
 bleach
 emoji
 feedparser
@@ -17,7 +17,7 @@ pynewtonmath
 pyowm
 python-rapidjson
 PyYAML
-requests>=2.20.0
+requests
 spamwatch
 sqlalchemy
 tldextract
