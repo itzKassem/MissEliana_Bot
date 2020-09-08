@@ -9,7 +9,6 @@ geopy
 googletrans
 hurry.filesize
 markdown2
-nltk
 Pillow>=4.2.0
 psycopg2-binary
 PyLyrics
