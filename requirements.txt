@@ -1,4 +1,4 @@
-python-telegram-bot==11
+python-telegram-bot==11.1.0
 telethon
 aiohttp
 bleach
@@ -23,7 +23,9 @@ tldextract
 wikipedia
 covid
 psutil
+nltk
 speedtest-cli>=2.0.2
 bs4
 lxml
 coffeehouse
+
